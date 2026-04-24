@@ -1,0 +1,88 @@
+/* monitor/static/monitor/css/style.css */
+
+body {
+    text-align: center;
+    background: #f0f2f5;
+    padding: 20px;
+}
+
+.card {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    display: inline-block;
+    min-width: 500px; /* Allargata per i due plot */
+}
+
+.button-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.spacer {
+    margin-left: auto;
+}
+
+.btn {
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    color: white;
+    white-space: nowrap;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-start { background: #28a745; }
+.btn-stop { background: #dc3545; }
+.btn-reset { background: #6c757d; }
+.btn-refresh { background: #007bff; }
+
+.status-tag {
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+input[type=range] {
+    cursor: pointer;
+    width: 200px;
+}
+
+/* RunControl */
+.main-container {
+        display: grid;
+        grid-template-columns: 300px 1fr; /* Colonna controlli fissa, plot flessibile */
+        gap: 20px;
+        padding: 20px;
+    }
+
+.run-control-card {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.control-group {
+    margin-bottom: 15px;
+}
+
+.control-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.control-group select, .control-group input {
+    width: 100%;
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ff0000;
+}

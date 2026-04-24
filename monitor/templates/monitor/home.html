@@ -1,0 +1,87 @@
+{% load static %}
+<html>
+<head>
+    <title>ZMQ Control Panel</title>
+
+    <link rel="icon" type="image/x-icon" href="{% static 'monitor/image/favicon.ico' %}">
+
+    <link rel="stylesheet" href="https://www.nerdfonts.com/assets/css/webfont.css">
+    <link rel="stylesheet" href="{% static 'monitor/css/style.css' %}">
+</head>
+<body>
+
+<div class="channel-bar" style="flex-direction: column; gap: 15px;">
+    <h1>Live plot mPMT data</h1>
+
+    <form method="GET" action="/">
+        <label>Canale:</label>
+        <select name="canale" onchange="this.form.submit()" class="dropdown">
+            {% for c in canali %}
+                <option value="{{ c }}" {% if c == canale_attuale %}selected{% endif %}>Canale {{ c }}</option>
+            {% endfor %}
+        </select>
+    </form>
+</div>
+
+<div class="dashboard-wrapper">
+
+     <main class="content-plots">
+        <div class="button-container">
+            {% if stato_worker == "Attivo" %}
+                <a href="/toggle_zmq/?azione=stop" class="btn btn-stop nf nf-oct-stop">&nbsp;Ferma Ricezione</a>
+            {% else %}
+                <a href="/toggle_zmq/?azione=start" class="btn btn-start nf nf-cod-debug_start">&nbsp;Avvia Ricezione</a>
+            {% endif %}
+
+            <button type="button" class="btn btn-refresh" onclick="location.reload();">
+                <i class="nf nf-oct-sync"></i>&nbsp;Refresh Plot</button>
+
+            <div class="spacer"></div>
+
+            <a href="/reset/" class="btn btn-reset nf nf-oct-trash" onclick="return confirm('Svuotare il DB?')">&nbsp;Reset Dati</a>
+        </div>
+
+        {% if plot_html %}
+            <div class="plot-container">
+                {{ plot_html|safe }}
+            </div>
+            <p class="caption">
+                Usa il mouse per zoomare. Doppio click per resettare la vista.
+            </p>
+        {% else %}
+            <div class="no-data">
+                <p>Nessun dato disponibile per il Canale {{ canale_attuale }}.</p>
+            </div>
+        {% endif %}
+    </main>
+
+    <aside class="sidebar-controls">
+        <div class="card run-control">
+            <h3><i class="nf nf-md-controller_classic"></i> Run Control</h3>
+            <form id="command-form">
+                {% csrf_token %}
+                <div class="control-group">
+                    <label>Comando</label>
+                    <select name="comando">
+                        <option value="set_threshold">Soglia (Threshold)</option>
+                        <option value="set_bias">Tensione Bias</option>
+                        <option value="set_gain">Guadagno (Gain)</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label>Valore</label>
+                    <input type="number" name="valore" placeholder="Inserisci valore...">
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <i class="nf nf-fa-paper_plane"></i> Invia
+                </button>
+            </form>
+        </div>
+    </aside>
+
+
+</div>
+
+
+</body>
+</html>
