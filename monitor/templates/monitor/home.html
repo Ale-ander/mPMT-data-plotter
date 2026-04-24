@@ -23,24 +23,53 @@
     </form>
 </div>
 
+
+<div class="button-container">
+    {% if stato_worker == "Attivo" %}
+        <a href="/toggle_zmq/?azione=stop" class="btn btn-stop nf nf-oct-stop">&nbsp;Ferma Ricezione</a>
+    {% else %}
+        <a href="/toggle_zmq/?azione=start" class="btn btn-start nf nf-cod-debug_start">&nbsp;Avvia Ricezione</a>
+    {% endif %}
+
+    <button type="button" class="btn btn-refresh" onclick="location.reload();">
+        <i class="nf nf-oct-sync"></i>&nbsp;Refresh Plot</button>
+
+    <div class="spacer"></div>
+
+    <a href="/reset/" class="btn btn-reset nf nf-oct-trash" onclick="return confirm('Svuotare il DB?')">&nbsp;Reset Dati</a>
+
+</div>
+
 <div class="dashboard-wrapper">
 
-     <main class="content-plots">
-        <div class="button-container">
-            {% if stato_worker == "Attivo" %}
-                <a href="/toggle_zmq/?azione=stop" class="btn btn-stop nf nf-oct-stop">&nbsp;Ferma Ricezione</a>
-            {% else %}
-                <a href="/toggle_zmq/?azione=start" class="btn btn-start nf nf-cod-debug_start">&nbsp;Avvia Ricezione</a>
-            {% endif %}
-
-            <button type="button" class="btn btn-refresh" onclick="location.reload();">
-                <i class="nf nf-oct-sync"></i>&nbsp;Refresh Plot</button>
-
-            <div class="spacer"></div>
-
-            <a href="/reset/" class="btn btn-reset nf nf-oct-trash" onclick="return confirm('Svuotare il DB?')">&nbsp;Reset Dati</a>
+    <aside class="sidebar-controls">
+        <div class="run-control-card">
+            <h3><i class="nf nf-md-remote"></i> Run Control</h3>
+            <form id="command-form" action="/send_command/" method="POST">
+                {% csrf_token %}
+                <div class="control-group">
+                <label for="device_ip"> mPMT IP</label>
+                <input type="text" name="device_ip" id="device_ip"
+                       placeholder="192.168.1.1"
+                       value="{{ request.session.saved_ip|default:'192.168.1.1' }}"
+                       pattern="^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$">
+                </div>
+                <div class="control-group">
+                    <label>Indirizzo</label>
+                    <input type="number" name="address" placeholder="Inserisci indirizzo registro...">
+                </div>
+                <div class="control-group">
+                    <label>Valore</label>
+                    <input type="number" name="valore" placeholder="Inserisci valore registro...">
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <i class="nf nf-fa-paper_plane"></i> Invia
+                </button>
+            </form>
         </div>
+    </aside>
 
+     <main class="plots-card">
         {% if plot_html %}
             <div class="plot-container">
                 {{ plot_html|safe }}
@@ -54,30 +83,6 @@
             </div>
         {% endif %}
     </main>
-
-    <aside class="sidebar-controls">
-        <div class="card run-control">
-            <h3><i class="nf nf-md-controller_classic"></i> Run Control</h3>
-            <form id="command-form">
-                {% csrf_token %}
-                <div class="control-group">
-                    <label>Comando</label>
-                    <select name="comando">
-                        <option value="set_threshold">Soglia (Threshold)</option>
-                        <option value="set_bias">Tensione Bias</option>
-                        <option value="set_gain">Guadagno (Gain)</option>
-                    </select>
-                </div>
-                <div class="control-group">
-                    <label>Valore</label>
-                    <input type="number" name="valore" placeholder="Inserisci valore...">
-                </div>
-                <button type="submit" class="btn btn-primary">
-                    <i class="nf nf-fa-paper_plane"></i> Invia
-                </button>
-            </form>
-        </div>
-    </aside>
 
 
 </div>

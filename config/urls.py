@@ -16,11 +16,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from monitor.views import home_plot, reset_db, toggle_zmq
+from monitor.views import home_plot, reset_db, toggle_zmq, send_command
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', home_plot, name='home'), # Imposta la home page
     path('reset/', reset_db, name='reset_db'),
     path('toggle_zmq/', toggle_zmq, name='toggle_zmq'),
+    path('send_command/', send_command, name='send_command'),
 ]
