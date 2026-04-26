@@ -1,9 +1,14 @@
-/* monitor/static/monitor/css/style.css */
+/* monitor/static/monitor/css/home_style.css */
 
 body {
     text-align: center;
     background: #f0f2f5;
     padding: 20px;
+}
+
+.channel-bar {
+    flex-direction: column;
+    gap: 15px;
 }
 
 .run-control-card,
@@ -34,20 +39,40 @@ body {
 }
 
 .btn {
-    padding: 10px 20px;
-    border-radius: 5px;
-    text-decoration: none;
-    font-weight: bold;
-    color: white;
-    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 42px;
+    box-sizing: border-box;
+    padding: 0 16px;
     border: none;
+    border-radius: 8px;
+    line-height: 1;
+    text-decoration: none;
     cursor: pointer;
+    color: white;
+    font-weight: bold;
 }
 
 .btn-start { background: #28a745; }
 .btn-stop { background: #dc3545; }
 .btn-reset { background: #6c757d; }
-.btn-refresh, .btn-primary { background: #007bff; }
+.btn-refresh, .btn-send { background: #007bff; }
+.btn-read { background: #007bff; }
+
+/*Buttons for runcontrol card*/
+.button-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+    flex: 1;
+}
+
+.btn-send, .btn-read {
+    padding: 10px 10px;
+    flex: 1;
+    font-weight: normal;
+}
 
 input[type=range] {
     cursor: pointer;
@@ -74,4 +99,28 @@ input[type=range] {
     width: 100%;
     padding: 8px;
     border-radius: 4px;
+}
+
+.messages {
+    margin: 15px auto;
+    width: 90%;
+    max-width: 900px;
+}
+
+.message {
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-weight: 500;
+}
+
+.message.success {
+    background: #e8f8f0;
+    color: #1e7e4f;
+    border: 1px solid #7bdba7;
+}
+
+.message.error {
+    background: #fdecea;
+    color: #a12622;
+    border: 1px solid #f5a7a3;
 }

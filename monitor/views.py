@@ -7,6 +7,7 @@ import threading
 from .management.commands import ascolta_zmq # Importiamo il modulo del comando
 import socket
 import json
+from django.contrib import messages
 
 zmq_thread = None
 
@@ -45,7 +46,7 @@ def home_plot(request):
 
     plot_html = None
     if x:
-        fig = make_subplots(rows=1, cols=2, subplot_titles=("Spettro", "Matrice ToT vs Carica"))
+        fig = make_subplots(rows=1, cols=2, subplot_titles=("Charge spectrum", "Matrix ToT vs Charge"))
 
         fig.add_trace(
             go.Histogram(x=x, nbinsx=2000, name="Spettro", marker_color='#3498db'),
@@ -81,14 +82,14 @@ def home_plot(request):
 def send_command(request):
     if request.method == "POST":
         ip_scheda = request.POST.get('device_ip')
+        action = request.POST.get('action')
         address = int(request.POST.get('address'))
         valore_raw = int(request.POST.get('valore'))
         request.session['saved_ip'] = ip_scheda
 
         try:
-
             payload = {
-                "command": "write",
+                "command": "write" if action == 'send' else "read",
                 "args": {
                     "address": address,
                     "value": valore_raw
@@ -100,14 +101,20 @@ def send_command(request):
                     file.write((json.dumps(payload) + '\n').encode('utf-8'))
                     file.flush()
 
-                    line = file.readline()
-                    print(line['status'])
+                    line = file.readline().decode('utf-8').strip()
 
-        except (socket.timeout, socket.error):
-            redirect('/')
+            messages.success(request, f"Register value: {line}")
+
+        except (socket.timeout, socket.error) as e:
+            messages.error(request, f"Connection error: {e}")
+            return redirect('/')
+
         except ValueError:
-            redirect('/')
-        except Exception:
-                redirect('/')
+            messages.error(request, "Value or address not valid.")
+            return redirect('/')
+
+        except Exception as e:
+            messages.error(request, f"Errore inatteso: {e}")
+            return redirect('/')
 
     return redirect('/')
