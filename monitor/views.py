@@ -8,6 +8,8 @@ from .management.commands import ascolta_zmq # Importiamo il modulo del comando
 import socket
 import json
 from django.contrib import messages
+from django.db.models import Count, F, IntegerField
+from django.db.models.functions import Cast
 
 zmq_thread = None
 
@@ -40,30 +42,77 @@ def reset_db(request):
 def home_plot(request):
     canale = int(request.GET.get('canale', 1))
 
-    queryset = MessaggioDato.objects.filter(canale=canale).order_by('id')
-    x = [d.ADC for d in queryset]
-    y = [d.ToT*0.4 for d in queryset]
+    adc_counts = MessaggioDato.objects.filter(canale=canale).values("ADC").annotate(count=Count("id")).order_by("ADC")
+    x_hist = [row["ADC"] for row in adc_counts]
+    y_hist = [row["count"] for row in adc_counts]
+
+    adc_bin_size = 4096 / 150
+    tot_bin_size = 4
+
+    density_counts = (
+        MessaggioDato.objects
+        .filter(canale=canale)
+        .annotate(
+            adc_bin=Cast(F("ADC") / adc_bin_size, IntegerField()),
+            tot_bin=Cast(F("ToT") / tot_bin_size, IntegerField()),
+        )
+        .values("adc_bin", "tot_bin")
+        .annotate(count=Count("id"))
+        .order_by("adc_bin", "tot_bin")
+    )
+
+    x_2d = []
+    y_2d = []
+    z_2d = []
+
+    for row in density_counts:
+        x_2d.append((row["adc_bin"] + 0.5) * adc_bin_size)
+        y_2d.append((row["tot_bin"] + 0.5) * tot_bin_size * 0.25)
+        z_2d.append(row["count"])
 
     plot_html = None
-    if x:
+    if x_hist:
         fig = make_subplots(rows=1, cols=2, subplot_titles=("Charge spectrum", "Matrix ToT vs Charge"))
 
         fig.add_trace(
-            go.Histogram(x=x, nbinsx=2000, name="Spettro", marker_color='#3498db'),
+            go.Scatter(
+                x=x_hist,
+                y=y_hist,
+                mode="lines",
+                line=dict(color="#1f77b4", width=1.5),
+                line_shape="hv",
+                fill="tozeroy",
+                fillcolor="rgb(31, 119, 180)",
+                name="Spettro"
+            ),
             row=1, col=1
         )
-        fig.update_xaxes(range=[0, 4096], row=1, col=1)
+        fig.update_xaxes(title_text="ADC", range=[0, 4096], row=1, col=1)
         fig.update_yaxes(row=1, col=1, type="log")
 
         fig.add_trace(
-            go.Histogram2d(x=x, y=y, nbinsx=150, nbinsy=150, colorscale=custom_viridis, name="Densità"),
+            go.Scatter(
+                x=x_2d,
+                y=y_2d,
+                mode="markers",
+                marker=dict(
+                    size=6,
+                    color=z_2d,
+                    colorscale=custom_viridis,
+                    colorbar=dict(title="Counts"),
+                    showscale=True
+                ),
+                name="Densità"
+            ),
             row=1, col=2
         )
+        fig.update_xaxes(title_text="ADC", row=1, col=2)
+        fig.update_yaxes(title_text="ToT", row=1, col=2)
         fig.update_layout(
             height=500,
             showlegend=False,
             template="plotly_white",
-            margin=dict(l=20, r=20, t=50, b=20),
+            margin=dict(l=20, r=20, t=50, b=20)
         )
 
         # Convertiamo il grafico in un div HTML

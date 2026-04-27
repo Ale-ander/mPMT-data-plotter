@@ -32,8 +32,8 @@ def start_listening():
                         tmp_canale = ((word >> 22) & 0x1F) + 1
 
                     elif header == 0x00000000:  # PAYL
-                        start, coarse, stop = (word >> 11) & 0xF, (word >> 4) & 0x7F, word & 0xF
-                        tmp_tot = (coarse << 4) + start - stop
+                        start, coarse = (word >> 11) & 0xF, word & 0x7FF
+                        tmp_tot = coarse - start
 
                     elif header == 0x40000000:
                         continue

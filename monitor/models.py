@@ -1,7 +1,7 @@
 from django.db import models
 
 class MessaggioDato(models.Model):
-    canale = models.IntegerField(default=0)
+    canale = models.IntegerField(default=0, db_index=True)
     ADC = models.IntegerField(default=0)
     ToT = models.IntegerField(default=0)
 
