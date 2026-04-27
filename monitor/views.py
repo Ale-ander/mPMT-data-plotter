@@ -84,16 +84,25 @@ def send_command(request):
         ip_scheda = request.POST.get('device_ip')
         action = request.POST.get('action')
         address = int(request.POST.get('address'))
-        valore_raw = int(request.POST.get('valore'))
         request.session['saved_ip'] = ip_scheda
 
         try:
+            args = {
+                "address": address
+            }
+
+            if action == 'send':
+                valore_raw = request.POST.get('valore')
+
+                if valore_raw is None or valore_raw == "":
+                    messages.error(request, "Value is required for write.")
+                    return redirect('/')
+
+                args["value"] = int(valore_raw)
+
             payload = {
                 "command": "write" if action == 'send' else "read",
-                "args": {
-                    "address": address,
-                    "value": valore_raw
-                }
+                "args": args
             }
 
             with socket.create_connection((ip_scheda, 9000), timeout=5) as sock:
@@ -103,7 +112,9 @@ def send_command(request):
 
                     line = file.readline().decode('utf-8').strip()
 
-            messages.success(request, f"Register value: {line}")
+            response = json.loads(line)
+            value = int(response["value"])
+            messages.success(request, f"Register value: 0x{value:08X}")
 
         except (socket.timeout, socket.error) as e:
             messages.error(request, f"Connection error: {e}")
