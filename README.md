@@ -5,9 +5,7 @@ To prepare the PostgreSQL database, run the following commands after cloning the
 
 ```bash
 python manage.py makemigrations
-```
-```bash
-python manage.py migrate`
+python manage.py migrate
 ```
 
 Then, to start the server (default ip is 127.0.0.1:8000), launch:
