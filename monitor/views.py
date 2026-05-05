@@ -7,6 +7,7 @@ import threading
 from .management.commands import ascolta_zmq # Importiamo il modulo del comando
 import socket
 import json
+import numpy as np
 from django.contrib import messages
 from django.db.models import Count, F, IntegerField
 from django.db.models.functions import Cast
@@ -69,6 +70,11 @@ def home_plot(request):
         x_2d.append((row["adc_bin"] + 0.5) * adc_bin_size)
         y_2d.append((row["tot_bin"] + 0.5) * tot_bin_size * 0.25)
         z_2d.append(row["count"])
+    
+    z_log = np.log10(np.where(np.array(z_2d) > 0, z_2d, 1e-9))
+    vals = [1, 10, 100, 1000, 10000]
+    tickvals = np.log10(vals)
+    ticktext = [str(v) for v in vals]
 
     plot_html = None
     if x_hist:
@@ -81,8 +87,6 @@ def home_plot(request):
                 mode="lines",
                 line=dict(color="#1f77b4", width=1.5),
                 line_shape="hv",
-                fill="tozeroy",
-                fillcolor="rgb(31, 119, 180)",
                 name="Spettro"
             ),
             row=1, col=1
@@ -97,9 +101,9 @@ def home_plot(request):
                 mode="markers",
                 marker=dict(
                     size=6,
-                    color=z_2d,
-                    colorscale=custom_viridis,
-                    colorbar=dict(title="Counts"),
+                    color=z_log,
+                    colorscale='Viridis',
+                    colorbar=dict(title="Counts", tickvals=tickvals, ticktext=ticktext),
                     showscale=True
                 ),
                 name="Densità"
