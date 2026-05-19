@@ -11,6 +11,9 @@ import numpy as np
 from django.contrib import messages
 from django.db.models import Count, F, IntegerField
 from django.db.models.functions import Cast
+from django.http import HttpResponse
+import csv
+from datetime import datetime
 
 zmq_thread = None
 
@@ -35,6 +38,20 @@ def toggle_zmq(request):
         zmq_thread = None
 
     return redirect('home')
+
+
+def export_csv(request):
+    response = HttpResponse(content_type='text/csv')
+    now = datetime.now().strftime('%Y%m%d_%H%M%S')
+    response['Content-Disposition'] = f'attachment; filename="{now}.csv"'
+    writer = csv.writer(response)
+    writer.writerow(['Canale', 'ToT', 'ADC'])
+
+    dati = MessaggioDato.objects.all()
+    for data in dati:
+        writer.writerow([data.canale, data.ToT, data.ADC])
+
+    return response
 
 def reset_db(request):
     MessaggioDato.objects.all().delete()
@@ -119,7 +136,6 @@ def home_plot(request):
             margin=dict(l=20, r=20, t=50, b=20)
         )
 
-        # Convertiamo il grafico in un div HTML
         plot_html = fig.to_html(full_html=False, include_plotlyjs='cdn',config={'responsive': True, 'displaylogo': False})
 
     # Determina stato worker (come prima)

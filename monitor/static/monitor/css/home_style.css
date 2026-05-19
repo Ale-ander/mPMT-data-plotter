@@ -57,8 +57,12 @@ body {
 .btn-start { background: #28a745; }
 .btn-stop { background: #dc3545; }
 .btn-reset { background: #6c757d; }
-.btn-refresh, .btn-send { background: #007bff; }
-.btn-read { background: #007bff; }
+.btn-refresh,
+.btn-send,
+.btn-read,
+.btn-download {
+    background: #007bff;
+}
 
 /*Buttons for runcontrol card*/
 .button-row {
@@ -68,9 +72,10 @@ body {
     flex: 1;
 }
 
-.btn-send, .btn-read {
+.btn-send,
+.btn-read,
+.btn-download {
     padding: 10px 10px;
-    flex: 1;
     font-weight: normal;
 }
 

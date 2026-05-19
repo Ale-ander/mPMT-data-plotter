@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from monitor.views import home_plot, reset_db, toggle_zmq, send_command
+from monitor.views import home_plot, reset_db, toggle_zmq, send_command, export_csv
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -24,4 +24,5 @@ urlpatterns = [
     path('reset/', reset_db, name='reset_db'),
     path('toggle_zmq/', toggle_zmq, name='toggle_zmq'),
     path('send_command/', send_command, name='send_command'),
+    path('export-csv/', export_csv, name='export_csv'),
 ]
