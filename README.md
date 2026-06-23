@@ -13,3 +13,6 @@ Then, to start the server (default ip is 127.0.0.1:8000), launch:
 ```bash
 python manage.py runserver <IP>:<PORT>
 ```
+
+### Example page
+![app](./screenshot.png)

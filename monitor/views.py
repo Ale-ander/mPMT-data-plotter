@@ -136,7 +136,7 @@ def home_plot(request):
             margin=dict(l=20, r=20, t=50, b=20)
         )
 
-        plot_html = fig.to_html(full_html=False, include_plotlyjs='cdn',config={'responsive': True, 'displaylogo': False})
+        plot_html = fig.to_html(full_html=False, include_plotlyjs='cdn', config={'responsive': True, 'displaylogo': False})
 
     # Determina stato worker (come prima)
     stato_attuale = "Attivo" if (zmq_thread and zmq_thread.is_alive()) else "Spento"
